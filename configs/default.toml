@@ -1,0 +1,3 @@
+[eBPFProgram]
+MaxEntries = 100
+TargetFunction = ["sys_write", "sys_close"]
