@@ -32,12 +32,15 @@ func (t *TemplateMgr) LoadTemplates(tmpls ...string) error {
 func (t *TemplateMgr) LoadFunc(name string, f any) {
 	(*t.functions)[name] = f
 }
+
 func (t *TemplateMgr) LoadFuncMap(m *template.FuncMap) {
 	t.functions = m
 }
+
 func (t *TemplateMgr) Generate(wr io.Writer, name string, data any) error {
 	return t.tmpl.ExecuteTemplate(wr, name, data)
 }
+
 func (t *TemplateMgr) GetNames() []string {
 	names := []string{}
 	for _, v := range t.tmpl.Templates() {

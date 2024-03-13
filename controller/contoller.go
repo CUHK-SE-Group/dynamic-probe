@@ -54,6 +54,7 @@ func InitContorller(opts ...Option) (*Contoller, error) {
 }
 
 func (c *Contoller) Run() {
+	fmt.Println(c.Conf)
 	for _, name := range c.templMgr.GetNames() {
 		for _, v := range c.Opt.ExecuteTemplates {
 			if v == name {

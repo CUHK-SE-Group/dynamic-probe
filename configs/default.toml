@@ -1,3 +1,34 @@
-[eBPFProgram]
-MaxEntries = 100
-TargetFunction = { "demonstratePointers" = ["int *"], "demonstrateDynamicMemory" = ["const char *"] }
+[EBPFProgram]
+ObjectBinary = "path/to/compiled/ebpf/program.o"
+
+[[EBPFProgram.Functions]]
+Name = "check_packets"
+Aim = "BpfFuncTypeKprobeTime"
+
+[[EBPFProgram.Functions]]
+Name = "count_packets"
+Aim = "BpfFuncTypeKprobeCount"
+
+[[EBPFProgram.Maps]]
+Type = "BPF_MAP_TYPE_HASH"
+Key = "u32"
+Value = "u64"
+MaxEntries = 1024
+Name = "packet_count_map"
+
+[[EBPFProgram.Maps]]
+Type = "BPF_MAP_TYPE_ARRAY_OF_MAPS"
+Key = "u32"
+Value = "u64"
+MaxEntries = 10
+Name = "array_of_packet_maps"
+
+[[EBPFProgram.Structs]]
+Name = "packet_data"
+ForTransmission = true
+Members = { source_ip = "u32", destination_ip = "u32", packet_size = "u32" }
+
+[[EBPFProgram.Structs]]
+Name = "flow_stats"
+ForTransmission = false
+Members = { total_packets = "u64", total_bytes = "u64" }
