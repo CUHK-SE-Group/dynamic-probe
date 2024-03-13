@@ -6,6 +6,12 @@
         "bpf_helpers.h": "c",
         "bpf_helper_defs.h": "c",
         "bpf_core_read.h": "c",
-        "vmlinux.h": "c"
+        "vmlinux.h": "c",
+        "*.tcc": "c",
+        "compare": "c",
+        "random": "c",
+        "limits": "c",
+        "type_traits": "c",
+        "version": "c"
     }
 }

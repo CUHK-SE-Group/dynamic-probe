@@ -13,10 +13,11 @@
             "cwd": "${workspaceFolder}",
             "args": [
                 "generate",
-                "--tmpl", "${workspaceFolder}/templates/kprobe.c.tmpl,${workspaceFolder}/templates/load.go.tmpl",
+                "--tmpl", "${workspaceFolder}/templates/kernel_c/*.gtpl",
                 "--conf", "${workspaceFolder}/configs/default.toml",
                 "--header", "${workspaceFolder}/headers",
-                "--output-dir", "${workspaceFolder}/output"
+                "--output-dir", "${workspaceFolder}/output",
+                "--execute", "base.c.gtpl"
             ],
         }
     ]

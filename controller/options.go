@@ -5,15 +5,16 @@ import (
 )
 
 type Options struct {
-	GenerateCCode   bool
-	CompileCCode    bool
-	GenerateCtlCode bool
-	ConfPath        string
-	Templates       []string
-	FuncMap         template.FuncMap
-	OutputStrategy  strategy
-	CHeaders        string
-	OutputDir       string
+	GenerateCCode    bool
+	CompileCCode     bool
+	GenerateCtlCode  bool
+	ConfPath         string
+	Templates        []string
+	ExecuteTemplates []string
+	FuncMap          template.FuncMap
+	OutputStrategy   strategy
+	CHeaders         string
+	OutputDir        string
 }
 type strategy string
 
@@ -76,5 +77,11 @@ func WithStdOut() Option {
 func WithCHeaders(path string) Option {
 	return func(o *Options) {
 		o.CHeaders = path
+	}
+}
+
+func WithExecuteTemplate(name ...string) Option {
+	return func(o *Options) {
+		o.ExecuteTemplates = append(o.ExecuteTemplates, name...)
 	}
 }

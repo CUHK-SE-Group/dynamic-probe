@@ -11,7 +11,7 @@ import (
 	"path"
 	"strings"
 
-	"github.com/BurntSushi/toml"
+	"github.com/pelletier/go-toml/v2"
 	"github.com/pkg/errors"
 )
 
@@ -25,7 +25,8 @@ type Contoller struct {
 func InitContorller(opts ...Option) (*Contoller, error) {
 	ctl := &Contoller{}
 	ctl.Opt = &Options{
-		FuncMap: make(template.FuncMap),
+		FuncMap:          make(template.FuncMap),
+		ExecuteTemplates: make([]string, 0),
 	}
 	for _, f := range opts {
 		f(ctl.Opt)
@@ -33,7 +34,11 @@ func InitContorller(opts ...Option) (*Contoller, error) {
 	fmt.Printf("%+v\n", ctl.Opt)
 	if ctl.Opt.ConfPath != "" {
 		ctl.Conf = &BpfRuntimeConfig{}
-		_, err := toml.DecodeFile(ctl.Opt.ConfPath, ctl.Conf)
+		file, err := os.ReadFile(ctl.Opt.ConfPath)
+		if err != nil {
+			return nil, errors.Wrap(err, "open config failed")
+		}
+		err = toml.Unmarshal(file, ctl.Conf)
 		if err != nil {
 			return nil, errors.Wrap(err, "decode config failed")
 		}
@@ -49,12 +54,12 @@ func InitContorller(opts ...Option) (*Contoller, error) {
 }
 
 func (c *Contoller) Run() {
-	if c.Opt.GenerateCCode {
-		for _, name := range c.templMgr.GetNames() {
-			if strings.HasSuffix(name, "c.tmpl") {
+	for _, name := range c.templMgr.GetNames() {
+		for _, v := range c.Opt.ExecuteTemplates {
+			if v == name {
 				filename := path.Base(name)
 				if c.Opt.OutputStrategy == file {
-					file, err := os.OpenFile(path.Join(c.Opt.OutputDir, strings.TrimSuffix(filename, ".tmpl")), os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0666)
+					file, err := os.OpenFile(path.Join(c.Opt.OutputDir, strings.TrimSuffix(filename, ".gtpl")), os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0666)
 					if err != nil {
 						log.Fatalf("failed to open file: %v", err)
 					}
@@ -68,11 +73,30 @@ func (c *Contoller) Run() {
 		}
 	}
 
+	// if c.Opt.GenerateCCode {
+	// 	for _, name := range c.templMgr.GetNames() {
+	// 		if strings.HasSuffix(name, "c.gtpl") {
+	// 			filename := path.Base(name)
+	// 			if c.Opt.OutputStrategy == file {
+	// 				file, err := os.OpenFile(path.Join(c.Opt.OutputDir, strings.TrimSuffix(filename, ".gtpl")), os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0666)
+	// 				if err != nil {
+	// 					log.Fatalf("failed to open file: %v", err)
+	// 				}
+	// 				defer file.Close()
+	// 				err = c.templMgr.Generate(file, filename, c.Conf.EBPFProgram)
+	// 				if err != nil {
+	// 					log.Fatal(err)
+	// 				}
+	// 			}
+	// 		}
+	// 	}
+	// }
+
 	if c.Opt.CompileCCode {
 		for _, name := range c.templMgr.GetNames() {
-			if strings.HasSuffix(name, "c.tmpl") {
+			if strings.HasSuffix(name, "c.gtpl") {
 				filename := path.Base(name)
-				cmd := exec.Command("go", "run", "github.com/cilium/ebpf/cmd/bpf2go", "-target", "amd64", "-output-dir", c.Opt.OutputDir, "bpf", path.Join(c.Opt.OutputDir, strings.TrimSuffix(filename, ".tmpl")), "--", fmt.Sprintf("-I%s", c.Opt.CHeaders))
+				cmd := exec.Command("go", "run", "github.com/cilium/ebpf/cmd/bpf2go", "-target", "amd64", "-output-dir", c.Opt.OutputDir, "bpf", path.Join(c.Opt.OutputDir, strings.TrimSuffix(filename, ".gtpl")), "--", fmt.Sprintf("-I%s", c.Opt.CHeaders))
 				log.Println(cmd.String())
 				cmd.Env = append(os.Environ(), "GOPACKAGE=main")
 				var stderr bytes.Buffer
@@ -87,22 +111,22 @@ func (c *Contoller) Run() {
 
 	}
 
-	if c.Opt.GenerateCtlCode {
-		for _, name := range c.templMgr.GetNames() {
-			if strings.HasSuffix(name, "go.tmpl") {
-				filename := path.Base(name)
-				if c.Opt.OutputStrategy == file {
-					file, err := os.OpenFile(path.Join(c.Opt.OutputDir, strings.TrimSuffix(filename, ".tmpl")), os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0666)
-					if err != nil {
-						log.Fatalf("failed to open file: %v", err)
-					}
-					defer file.Close()
-					err = c.templMgr.Generate(file, filename, c.Conf.EBPFProgram)
-					if err != nil {
-						log.Fatal(err)
-					}
-				}
-			}
-		}
-	}
+	// if c.Opt.GenerateCtlCode {
+	// 	for _, name := range c.templMgr.GetNames() {
+	// 		if strings.HasSuffix(name, "go.gtpl") {
+	// 			filename := path.Base(name)
+	// 			if c.Opt.OutputStrategy == file {
+	// 				file, err := os.OpenFile(path.Join(c.Opt.OutputDir, strings.TrimSuffix(filename, ".gtpl")), os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0666)
+	// 				if err != nil {
+	// 					log.Fatalf("failed to open file: %v", err)
+	// 				}
+	// 				defer file.Close()
+	// 				err = c.templMgr.Generate(file, filename, c.Conf.EBPFProgram)
+	// 				if err != nil {
+	// 					log.Fatal(err)
+	// 				}
+	// 			}
+	// 		}
+	// 	}
+	// }
 }

@@ -1,6 +1,7 @@
 package executor
 
 import (
+	"fmt"
 	"io"
 	"text/template"
 
@@ -16,12 +17,16 @@ type TemplateMgr struct {
 func (t *TemplateMgr) LoadTemplates(tmpls ...string) error {
 	t.names = append(t.names, tmpls...)
 
+	var err error
 	t.tmpl = template.New("").Funcs(*t.functions)
-	_, err := t.tmpl.ParseFiles(tmpls...)
-	if err != nil {
-		err = errors.Wrap(err, "parse template failed")
+	for _, v := range tmpls {
+		fmt.Println(v)
+		t.tmpl, err = t.tmpl.ParseGlob(v)
+		if err != nil {
+			return errors.Wrap(err, "parse template dir failed")
+		}
 	}
-	return err
+	return nil
 }
 
 func (t *TemplateMgr) LoadFunc(name string, f any) {
@@ -34,5 +39,9 @@ func (t *TemplateMgr) Generate(wr io.Writer, name string, data any) error {
 	return t.tmpl.ExecuteTemplate(wr, name, data)
 }
 func (t *TemplateMgr) GetNames() []string {
-	return t.names
+	names := []string{}
+	for _, v := range t.tmpl.Templates() {
+		names = append(names, v.Name())
+	}
+	return names
 }

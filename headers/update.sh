@@ -12,6 +12,9 @@ headers=(
     "$prefix"/src/bpf_helpers.h
     "$prefix"/src/bpf_tracing.h
     "$prefix"/src/bpf_core_read.h
+    "$prefix"/src/libbpf_common.h
+    "$prefix"/src/btf.h
+    "$prefix"/src/libbpf_version.h
 )
 
 # Fetch libbpf release and extract the desired headers
