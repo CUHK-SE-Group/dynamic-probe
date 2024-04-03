@@ -57,8 +57,8 @@ func (c *Contoller) Run() {
 	fmt.Println(c.Conf)
 	for _, name := range c.templMgr.GetNames() {
 		for _, v := range c.Opt.ExecuteTemplates {
-			if v == name {
-				filename := path.Base(name)
+			filename := path.Base(name)
+			if v == filename {
 				if c.Opt.OutputStrategy == file {
 					file, err := os.OpenFile(path.Join(c.Opt.OutputDir, strings.TrimSuffix(filename, ".gtpl")), os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0666)
 					if err != nil {
