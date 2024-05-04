@@ -12,7 +12,7 @@ sudo apt update
 
 # Install jq and wget if not already installed
 echo "Installing required packages: jq, wget..."
-sudo apt install -y jq wget
+sudo apt install -y jq wget curl
 
 # Change to the 'headers' directory (create it if it doesn't exist)
 HEADERS_DIR="headers"

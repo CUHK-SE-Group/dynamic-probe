@@ -1,11 +1,8 @@
 # Install Dependencies
 
 ```bash
-apt install jq wget 
+bash init.sh
 ```
 
-```bash
-cd headers
-bash get_vmlinux.h.sh
-```
+# 
 

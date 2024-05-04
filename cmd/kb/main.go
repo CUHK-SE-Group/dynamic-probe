@@ -24,8 +24,8 @@ func commandGenerate() *cobra.Command {
 			fmt.Println(tmplFiles)
 			ctrl, err := controller.InitContorller(
 				controller.WithGenerateCCode(),
-				// controller.WithCompileCCode(),
-				// controller.WithGenerateCtlCode(),
+				controller.WithCompileCCode(),
+				controller.WithGenerateCtlCode(),
 				controller.WithConfig(confFile),
 				controller.WithTemplates(tmplFiles...),
 				controller.WithExecuteTemplate(executeTmpls...),
