@@ -13,10 +13,10 @@
             "cwd": "${workspaceFolder}",
             "args": [
                 "generate",
-                "--tmpl", "${workspaceFolder}/templates/kernel_c/*.gtpl",
-                "--conf", "${workspaceFolder}/configs/default.toml",
+                "--tmpl", "${workspaceFolder}/examples/kernel_c/templates/*.gtpl",
+                "--conf", "${workspaceFolder}/examples/kernel_c/conf/default.toml",
                 "--header", "${workspaceFolder}/headers",
-                "--output-dir", "${workspaceFolder}/output",
+                "--output-dir", "${workspaceFolder}/examples/kernel_c/output",
                 "--execute", "base.c.gtpl"
             ],
         }

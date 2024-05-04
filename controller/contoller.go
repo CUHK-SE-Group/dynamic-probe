@@ -54,7 +54,7 @@ func InitContorller(opts ...Option) (*Contoller, error) {
 }
 
 func (c *Contoller) Run() {
-	fmt.Println(c.Conf)
+	// fmt.Println(c.Conf)
 	for _, name := range c.templMgr.GetNames() {
 		for _, v := range c.Opt.ExecuteTemplates {
 			filename := path.Base(name)
@@ -74,24 +74,24 @@ func (c *Contoller) Run() {
 		}
 	}
 
-	if c.Opt.GenerateCCode {
-		for _, name := range c.templMgr.GetNames() {
-			if strings.HasSuffix(name, "c.gtpl") {
-				filename := path.Base(name)
-				if c.Opt.OutputStrategy == file {
-					file, err := os.OpenFile(path.Join(c.Opt.OutputDir, strings.TrimSuffix(filename, ".gtpl")), os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0666)
-					if err != nil {
-						log.Fatalf("failed to open file: %v", err)
-					}
-					defer file.Close()
-					err = c.templMgr.Generate(file, filename, c.Conf.EBPFProgram)
-					if err != nil {
-						log.Fatal(err)
-					}
-				}
-			}
-		}
-	}
+	// if c.Opt.GenerateCCode {
+	// 	for _, name := range c.templMgr.GetNames() {
+	// 		if strings.HasSuffix(name, "c.gtpl") {
+	// 			filename := path.Base(name)
+	// 			if c.Opt.OutputStrategy == file {
+	// 				file, err := os.OpenFile(path.Join(c.Opt.OutputDir, strings.TrimSuffix(filename, ".gtpl")), os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0666)
+	// 				if err != nil {
+	// 					log.Fatalf("failed to open file: %v", err)
+	// 				}
+	// 				defer file.Close()
+	// 				err = c.templMgr.Generate(file, filename, c.Conf.EBPFProgram)
+	// 				if err != nil {
+	// 					log.Fatal(err)
+	// 				}
+	// 			}
+	// 		}
+	// 	}
+	// }
 
 	if c.Opt.CompileCCode {
 		for _, name := range c.templMgr.GetNames() {
