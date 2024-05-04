@@ -54,6 +54,7 @@ install_bpftool() {
     fi
 
     # 可以选择移动 bpftool 到系统路径中
+    sudo chmod +x bpftool
     sudo mv bpftool /usr/local/bin/
 
     echo "bpftool is ready to use."
