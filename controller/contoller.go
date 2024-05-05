@@ -55,19 +55,21 @@ func InitContorller(opts ...Option) (*Contoller, error) {
 
 func (c *Contoller) Run() {
 	// fmt.Println(c.Conf)
-	for _, name := range c.templMgr.GetNames() {
-		for _, v := range c.Opt.ExecuteTemplates {
-			filename := path.Base(name)
-			if v == filename {
-				if c.Opt.OutputStrategy == file {
-					file, err := os.OpenFile(path.Join(c.Opt.OutputDir, strings.TrimSuffix(filename, ".gtpl")), os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0666)
-					if err != nil {
-						log.Fatalf("failed to open file: %v", err)
-					}
-					defer file.Close()
-					err = c.templMgr.Generate(file, filename, c.Conf.EBPFProgram)
-					if err != nil {
-						log.Fatal(err)
+	if c.Opt.GenerateCCode {
+		for _, name := range c.templMgr.GetNames() {
+			for _, v := range c.Opt.ExecuteTemplates {
+				filename := path.Base(name)
+				if v == filename {
+					if c.Opt.OutputStrategy == file {
+						file, err := os.OpenFile(path.Join(c.Opt.OutputDir, strings.TrimSuffix(filename, ".gtpl")), os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0666)
+						if err != nil {
+							log.Fatalf("failed to open file: %v", err)
+						}
+						defer file.Close()
+						err = c.templMgr.Generate(file, filename, c.Conf.EBPFProgram)
+						if err != nil {
+							log.Fatal(err)
+						}
 					}
 				}
 			}
@@ -95,17 +97,22 @@ func (c *Contoller) Run() {
 
 	if c.Opt.CompileCCode {
 		for _, name := range c.templMgr.GetNames() {
-			if strings.HasSuffix(name, "c.gtpl") {
+			for _, v := range c.Opt.ExecuteTemplates {
 				filename := path.Base(name)
-				cmd := exec.Command("go", "run", "github.com/cilium/ebpf/cmd/bpf2go", "-target", "amd64", "-output-dir", c.Opt.OutputDir, "bpf", path.Join(c.Opt.OutputDir, strings.TrimSuffix(filename, ".gtpl")), "--", fmt.Sprintf("-I%s", c.Opt.CHeaders))
-				log.Println(cmd.String())
-				cmd.Env = append(os.Environ(), "GOPACKAGE=main")
-				var stderr bytes.Buffer
-				cmd.Stderr = &stderr
+				if v == name {
+					if strings.HasSuffix(filename, "c.gtpl") {
+						filename := path.Base(name)
+						cmd := exec.Command("go", "run", "github.com/cilium/ebpf/cmd/bpf2go", "-target", "amd64", "-output-dir", c.Opt.OutputDir, "bpf", path.Join(c.Opt.OutputDir, strings.TrimSuffix(filename, ".gtpl")), "--", fmt.Sprintf("-I%s", c.Opt.CHeaders))
+						log.Println(cmd.String())
+						cmd.Env = append(os.Environ(), "GOPACKAGE=main")
+						var stderr bytes.Buffer
+						cmd.Stderr = &stderr
 
-				err := cmd.Run()
-				if err != nil {
-					log.Fatalf("Command execution failed: %v, stderr: %s", err, stderr.String())
+						err := cmd.Run()
+						if err != nil {
+							log.Fatalf("Command execution failed: %v, stderr: %s", err, stderr.String())
+						}
+					}
 				}
 			}
 		}

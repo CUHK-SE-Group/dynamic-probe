@@ -24,11 +24,11 @@ MaxEntries = 10
 Name = "array_of_packet_maps"
 
 [[EBPFProgram.Structs]]
-Name = "packet_data"
+Name = "packet_data_struct"
 ForTransmission = true
 Members = { source_ip = "u32", destination_ip = "u32", packet_size = "u32" }
 
 [[EBPFProgram.Structs]]
-Name = "flow_stats"
+Name = "flow_stats_struct"
 ForTransmission = false
 Members = { total_packets = "u64", total_bytes = "u64" }
