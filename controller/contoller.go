@@ -54,6 +54,13 @@ func InitContorller(opts ...Option) (*Contoller, error) {
 }
 
 func (c *Contoller) Run() {
+	// 创建输出目录
+	if c.Opt.OutputStrategy == file {
+		if err := os.MkdirAll(c.Opt.OutputDir, 0755); err != nil {
+			log.Fatalf("failed to create output directory: %v", err)
+		}
+	}
+
 	// fmt.Println(c.Conf)
 	if c.Opt.GenerateCCode {
 		for _, name := range c.templMgr.GetNames() {

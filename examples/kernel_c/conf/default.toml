@@ -1,0 +1,57 @@
+[EBPFProgram]
+ObjectBinary = "path/to/compiled/ebpf/program.o"
+
+[[EBPFProgram.Functions]]
+Name = "check_packets"
+Aim = "BpfFuncTypeKprobeTime"
+
+[[EBPFProgram.Functions]]
+Name = "count_packets"
+Aim = "BpfFuncTypeKprobeCount"
+
+[[EBPFProgram.Maps]]
+Type = "BPF_MAP_TYPE_HASH"
+Key = "u32"
+Value = "u64"
+MaxEntries = 1024
+Name = "packet_count_map"
+
+[[EBPFProgram.Maps]]
+Type = "BPF_MAP_TYPE_ARRAY_OF_MAPS"
+Key = "u32"
+Value = "u64"
+MaxEntries = 10
+Name = "array_of_packet_maps"
+
+[[EBPFProgram.Maps]]
+Type = "BPF_MAP_TYPE_ARRAY_OF_MAPS"
+Key = "u32"
+Value = "u64"
+MaxEntries = 10
+Name = "args_map_0"
+
+[[EBPFProgram.Maps]]
+Type = "BPF_MAP_TYPE_ARRAY_OF_MAPS"
+Key = "u32"
+Value = "u64"
+MaxEntries = 10
+Name = "start_time_map"
+
+
+[[EBPFProgram.Maps]]
+Type = "BPF_MAP_TYPE_ARRAY_OF_MAPS"
+Key = "u32"
+Value = "u64"
+MaxEntries = 10
+Name = "args_map_1"
+
+
+[[EBPFProgram.Structs]]
+Name = "count_packets_args"
+ForTransmission = true
+Members = { source_ip = "u32", destination_ip = "u32", packet_size = "u32" }
+
+[[EBPFProgram.Structs]]
+Name = "check_packets_args"
+ForTransmission = false
+Members = { total_packets = "u64", total_bytes = "u64" }

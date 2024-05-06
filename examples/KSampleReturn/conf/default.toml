@@ -1,0 +1,30 @@
+[EBPFProgram]
+ObjectBinary = "path/to/compiled/ebpf/program.o"
+
+[[EBPFProgram.Functions]]
+Name = "check_packets"
+Aim = "BpfFuncTypeKprobeTime"
+
+[[EBPFProgram.Functions]]
+Name = "count_packets"
+Aim = "BpfFuncTypeKprobeSampleReturn"
+
+[[EBPFProgram.Maps]]
+Type = "BPF_MAP_TYPE_HASH"
+Key = "u32"
+Value = "u64"
+MaxEntries = 1
+Name = "function_count"
+
+[[EBPFProgram.Maps]]
+Type = "BPF_MAP_TYPE_ARRAY_OF_MAPS"
+Key = "u32"
+Value = "u64"
+MaxEntries = 10
+Name = "array_of_packet_maps"
+
+[[EBPFProgram.Structs]]
+Name = "packet_data"
+ForTransmission = true
+Members = { source_ip = "u32", destination_ip = "u32", packet_size = "u32" }
+
